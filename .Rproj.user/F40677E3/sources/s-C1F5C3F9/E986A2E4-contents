@@ -1,0 +1,9 @@
+install.packages("blogdown")
+blogdown::install_hugo()
+blogdown::new_site(theme="nurlansu/hugo-sustain")
+blogdown::build_site()
+blogdown::serve_site()
+
+install.packages("tidyverse", repo = 'https://mac.R-project.org')
+update.packages("tidyverse")
+getwd()

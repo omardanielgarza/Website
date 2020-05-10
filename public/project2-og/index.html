@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Omar Garza" />
+    <meta name="description" content="Describe your website">
+    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+    <title>Project 2: Modeling, Testing, and Predicting</title>
+    <meta name="generator" content="Hugo 0.70.0" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/css/main.css" />
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,200bold,400old" />
+    
+    <!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+
+    
+  </head>
+
+  <body>
+    <div id="wrap">
+
+      
+      <nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/"><i class="fa fa-home"></i></a>
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar">
+      <ul class="nav navbar-nav navbar-right">
+      
+        
+        <li><a href="/blog/">BLOG</a></li>
+        
+        <li><a href="/projects/">PROJECTS</a></li>
+        
+        <li><a href="Omar%20Garza%20Resume.pdf">RESUME</a></li>
+        
+      
+      </ul>
+    </div>
+  </div>
+</nav>
+
+      
+      <div class="container">
+        <div class="blog-post">
+          <h3>
+            <strong><a href="/project2-og/">Project 2: Modeling, Testing, and Predicting</a></strong>
+          </h3>
+        </div>
+        <div class="blog-title">
+          <h4>
+          January 1, 0001
+            &nbsp;&nbsp;
+            
+          </h4>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="blogpost">
+              
+
+
+<pre class="r"><code>library(LearnBayes)
+head(studentdata)</code></pre>
+<pre><code>## Student Height Gender Shoes Number Dvds ToSleep WakeUp
+Haircut Job Drink
+## 1 1 67 female 10 5 10 -2.5 5.5 60 30.0 water
+## 2 2 64 female 20 7 5 1.5 8.0 0 20.0 pop
+## 3 3 61 female 12 2 6 -1.5 7.5 48 0.0 milk
+## 4 4 61 female 3 6 40 2.0 8.5 10 0.0 water
+## 5 5 70 male 4 5 6 0.0 9.0 15 17.5 pop
+## 6 6 63 female NA 3 5 1.0 8.5 25 0.0 water</code></pre>
+<pre class="r"><code>#?studentdata</code></pre>
+<p><em>My dataset is named ‘studentdata’ and comes from the ‘LearnBayes’ package built in R. It is the answers to a sheet of questions given to a large number of students in an introductory statistics class. There contains 11 variables with a total of 657 observations. Among the most important variables, in which I focus on in this project, include the following numerical ones: ‘Height’ in inches, ‘Shoes’ relating to the number of pairs the student owns, ‘ToSleep’ in regards to the time the student went to sleep the previous night in hours past midnight (negative values equate to before midnight), and ‘WakeUp’ in regards to the time the person woke up the next morning. The categorical variables include: ‘Drink’ which has three levels (milk, pop, and water) relating to the usual drink the student has at suppertime, and ‘Gender’ which has two levels (male, female) and was used as my binary variable. The others are not worth mentioning as I did not use them anywhere in the project.</em></p>
+<pre class="r"><code>studentdata &lt;- studentdata %&gt;% na.omit()
+man1 &lt;- manova(cbind(Height, Shoes, ToSleep)~Drink, data= studentdata)
+summary(man1)</code></pre>
+<pre><code>## Df Pillai approx F num Df den Df Pr(&gt;F)
+## Drink 2 0.027973 2.6242 6 1110 0.01568 *
+## Residuals 556
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<pre class="r"><code>summary.aov(man1)</code></pre>
+<pre><code>## Response Height :
+## Df Sum Sq Mean Sq F value Pr(&gt;F)
+## Drink 2 45.7 22.865 1.2943 0.2749
+## Residuals 556 9822.0 17.665
+##
+## Response Shoes :
+## Df Sum Sq Mean Sq F value Pr(&gt;F)
+## Drink 2 2065 1032.57 5.4281 0.004627 **
+## Residuals 556 105767 190.23
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1
+##
+## Response ToSleep :
+## Df Sum Sq Mean Sq F value Pr(&gt;F)
+## Drink 2 4.29 2.1465 1.1342 0.3224
+## Residuals 556 1052.20 1.8924</code></pre>
+<pre class="r"><code>pairwise.t.test(studentdata$Shoes, studentdata$Drink, p.adj = &quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  studentdata$Shoes and studentdata$Drink 
+## 
+##       milk   pop   
+## pop   0.3562 -     
+## water 0.0034 0.0244
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>1-(0.95)^7</code></pre>
+<pre><code>## [1] 0.3016627</code></pre>
+<pre class="r"><code>0.05/7</code></pre>
+<pre><code>## [1] 0.007142857</code></pre>
+<p><em>A MANOVA test was performed to test the effect of the categorical variable, ‘Drink’, with three levels (milk, pop, water) on three numeric variables (‘Height’, ‘Shoes’, and ‘ToSleep’). I performed a total of 7 tests, and the probability of at least one Type I error was found to be 0.302, then after using the bonferroni correction, the adjusted significance level was 0.007. There was evidence of a significant effect of at least one of the numerical variables due to the p-value being less than 0.05 in the MANOVA. Thus, three univariate ANOVAs were performed to determine which of the numeric variables showed the mean significant difference across the levels of ‘Drink’ type. The ANOVA tests demonstrated that ‘Shoes’ had the significant differences on ‘Drink’. Finally, a post-hoc t-test was performed conducting three pairwise comparisons to determine which ‘Drink’ levels differed. The results indicated that there are statistical significant differences between milk and water (p= 0.0034) and also between pop and water (p= 0.0244), but not between milk and pop (p= 0.3562). Some assumptions may have been met, but other were not. For instance random sampling was not met in this situation because I had to omit any NAs in the dataset before running any tests. On the other hand, assumptions like no extreme outliers, and normal distribution did seem to have been met in this situation. While I recognize there are many other assumptions, these are only a few to mention that can relate best to my model.</em></p>
+<pre class="r"><code>rand_dist &lt;- vector()
+for(i in 1:5000){
+  new &lt;- data.frame(ToSleep= sample(studentdata$ToSleep), Gender= studentdata$Gender)
+  rand_dist[i] &lt;- mean(new[new$Gender==&quot;male&quot;,]$ToSleep)- mean(new[new$Gender==&quot;female&quot;,]$ToSleep)
+}
+
+studentdata %&gt;% group_by(Gender) %&gt;%
+  summarize(means=mean(ToSleep)) %&gt;% 
+  summarize(`mean_diff:`=diff(means))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   `mean_diff:`
+##          &lt;dbl&gt;
+## 1        0.405</code></pre>
+<pre class="r"><code>{hist(rand_dist, main = &quot;&quot;, ylab = &quot;&quot;); abline(v= 0.4046703 , col= &quot;red&quot;)}</code></pre>
+<p><img src="/Project2-OG_files/figure-html/unnamed-chunk-3-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>mean(rand_dist &gt; 0.4046703 | rand_dist &lt; -0.4046703 )</code></pre>
+<pre><code>## [1] 8e-04</code></pre>
+<p><em>Null Hypothesis: Mean time, in hours, the students went to sleep past midnight (ToSleep) is the same between males and females (Gender). Alternative Hypothesis: Mean time, in hours, the students went to sleep past midnight (ToSleep) is different between males and females (Gender). I performed a randomization tests using the original permutation, and then a for loop. After obtaining the extreme mean difference of the orginal data as 0.405, I computed a two-tailed p-value to determine if we can reject the null hypothesis. Given that the p-value=6e-04, it is obvious that this is smaller than the alpha 0.05. Thus, we are able to reject the null hypothesis and accept the alternative meaning that the time males went to sleep before midnight the previous night was different than the time females went to sleep, on average. A histogram was compited to show the distribution and included the test statistic in red.</em></p>
+<pre class="r"><code>library(lmtest)
+studentdata$WakeUp_c &lt;- studentdata$WakeUp - mean(studentdata$WakeUp)
+fit &lt;- lm(ToSleep ~ Drink*WakeUp_c, data = studentdata)
+summary(fit)</code></pre>
+<pre><code>##
+## Call:
+## lm(formula = ToSleep ~ Drink * WakeUp_c, data =
+studentdata)
+##
+## Residuals:
+## Min 1Q Median 3Q Max
+## -3.6247 -0.8927 -0.1109 0.7994 4.0001
+##
+## Coefficients:
+## Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept) 1.02358 0.12709 8.054 4.94e-15 ***
+## Drinkpop 0.06218 0.16233 0.383 0.702
+## Drinkwater -0.03609 0.14575 -0.248 0.805
+## WakeUp_c 0.44461 0.07862 5.655 2.50e-08 ***
+## Drinkpop:WakeUp_c -0.05334 0.10309 -0.517 0.605
+## Drinkwater:WakeUp_c -0.03908 0.09549 -0.409 0.683
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1
+##
+## Residual standard error: 1.248 on 553 degrees of freedom
+## Multiple R-squared: 0.1846, Adjusted R-squared: 0.1772
+## F-statistic: 25.03 on 5 and 553 DF, p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>newdat &lt;- studentdata
+newdat$Drink &lt;- rep(&quot;milk&quot;, length(newdat$Drink))
+newdat$Drink &lt;- rep(&quot;pop&quot;, length(newdat$Drink))
+newdat$Drink &lt;- rep(&quot;water&quot;, length(newdat$Drink))
+newdat$pred1 &lt;- predict(fit, newdat)
+newdat$pred2 &lt;- predict(fit, newdat)
+newdat$pred3 &lt;- predict(fit, newdat)
+studentdata$WakeUp_c &lt;- studentdata$WakeUp_c
+
+
+qplot(x= WakeUp_c, y= ToSleep, color= Drink, data = studentdata) + stat_smooth(method = &quot;lm&quot;, se= FALSE, fullrange = TRUE)</code></pre>
+<p><img src="/Project2-OG_files/figure-html/unnamed-chunk-4-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>resids &lt;- fit$residuals; fitvals &lt;- fit$fitted.values
+ggplot() + geom_point(aes(fitvals, resids)) + geom_hline(yintercept = 0, col= &quot;red&quot;)</code></pre>
+<p><img src="/Project2-OG_files/figure-html/unnamed-chunk-4-2.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>bptest(fit)</code></pre>
+<pre><code>## 
+##  studentized Breusch-Pagan test
+## 
+## data:  fit
+## BP = 5.9127, df = 5, p-value = 0.3148</code></pre>
+<pre class="r"><code>ggplot()+geom_histogram(aes(resids),bins=20)</code></pre>
+<p><img src="/Project2-OG_files/figure-html/unnamed-chunk-4-3.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot()+geom_qq(aes(sample=resids))+geom_qq_line(aes(sample=resids), color=&#39;red&#39;)</code></pre>
+<p><img src="/Project2-OG_files/figure-html/unnamed-chunk-4-4.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>library(sandwich)
+
+summary(fit)$coef[,1:2]</code></pre>
+<pre><code>##                        Estimate Std. Error
+## (Intercept)          1.02358317 0.12708663
+## Drinkpop             0.06218417 0.16233100
+## Drinkwater          -0.03608824 0.14574857
+## WakeUp_c             0.44460972 0.07862205
+## Drinkpop:WakeUp_c   -0.05334040 0.10308560
+## Drinkwater:WakeUp_c -0.03907614 0.09549441</code></pre>
+<pre class="r"><code>coeftest(fit, vcov=vcovHC(fit))[,1:2]</code></pre>
+<pre><code>##                        Estimate Std. Error
+## (Intercept)          1.02358317 0.14022325
+## Drinkpop             0.06218417 0.17253775
+## Drinkwater          -0.03608824 0.15650932
+## WakeUp_c             0.44460972 0.08673388
+## Drinkpop:WakeUp_c   -0.05334040 0.11631294
+## Drinkwater:WakeUp_c -0.03907614 0.09954527</code></pre>
+<pre class="r"><code>(sum((studentdata$ToSleep- mean(studentdata$ToSleep))^2)- sum(fit$residuals^2))/ sum((studentdata$ToSleep-mean(studentdata$ToSleep))^2)</code></pre>
+<pre><code>## [1] 0.1845525</code></pre>
+<p><em>The linear regression moodel predicted ‘ToSleep’ from the interaction of ‘Drink’ and ‘WakeUp_c’, as it’s mean was centered. The full model with the interaction is ToSleep= 1.02+0.06(Drinkpop)-0.04(Drinkwater)+0.44(WakeUp_c)-0.05(Drinkpop:WakeUp_c)-0.04(Drinkwater:WakeUp_c. Controlling for ‘WakeUp_c’, when ‘Drinkpop’ is 1 and the others 0, then ‘ToSleep’ increases by a factor of 0.062. Similarly, when controlling for ‘WakeUp_c’, and ‘Drinkwater’ is 1, while others are 0, then ‘ToSleep’ decreases by a factor of 0.036. For every 1-unit increase in ‘WakeUp_c’, ‘ToSleep’ increases by a factor of 0.444. As far as the interactions, when ‘Drinkpop’ is 1 and the rest 0, the resulting equation is: ToSleep=1.08+0.39(WakeUp_c). When ‘Drinkwater’ is 1 and the others 0, the resulting equation is: ToSleep=0.987+0.41(WakeUp_c). Assumptions were checked graphically, which linearlity and homoskeedasticity looked OK, as well as normality. I still computed regression results with robust standard errors, and indeed since there was no significant change from the uncorrected SEs to the corrected robust SEs, then it proved homoskedasticity to be met. The proportion of the variation in the response variable ‘ToSleep’ is 0.185 and can be explained by the overall model provided above.</em></p>
+<pre class="r"><code>samp_distn &lt;- replicate(5000, {
+  boot_dat &lt;- sample_frac(studentdata, replace = T)
+  fit1 &lt;- lm(ToSleep ~ Drink*WakeUp_c, data = boot_dat)
+  coef(fit1)
+})
+
+samp_distn %&gt;% t %&gt;% as.data.frame %&gt;% summarize_all(sd)</code></pre>
+<pre><code>## (Intercept) Drinkpop Drinkwater WakeUp_c
+Drinkpop:WakeUp_c Drinkwater:WakeUp_c
+## 1 0.137795 0.1703982 0.1538948 0.08461191 0.1158087
+0.09787689</code></pre>
+<p><em>The same regression model from before, with the interaction, was used to compute the bootstrapped standard errors. When comparing them to the original and robust standard errors, these values were still not very from off from the other two outputs. More precisely, the bootstrapped SEs seemed to closer to the values of the corrected SEs rather than the uncorrected SEs, but it still decreased more. Given this information, the p-value would also decrease with these SEs. Either way, however, it will still not be significant just as before so we would still fail to reject the null hypothesis.</em></p>
+<pre class="r"><code>newdat2 &lt;- studentdata %&gt;% mutate(y=ifelse(Gender==&quot;male&quot;,1,0))
+
+fit2 &lt;- glm(y ~ Drink + ToSleep, data = newdat2, family = &quot;binomial&quot;)
+coeftest(fit2)</code></pre>
+<pre><code>##
+## z test of coefficients:
+##
+## Estimate Std. Error z value Pr(&gt;|z|)
+## (Intercept) -0.500071 0.220551 -2.2674 0.02337 *
+## Drinkpop -0.194017 0.266251 -0.7287 0.46618
+## Drinkwater -0.548505 0.242256 -2.2642 0.02356 *
+## ToSleep 0.207865 0.065902 3.1541 0.00161 **
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<pre class="r"><code>exp(coef(fit2))</code></pre>
+<pre><code>## (Intercept)    Drinkpop  Drinkwater     ToSleep 
+##   0.6064879   0.8236437   0.5778130   1.2310464</code></pre>
+<pre class="r"><code>probs &lt;- predict(fit2, type = &quot;response&quot;)
+table(predict= as.numeric(probs&gt;0.5), truth= newdat2$y) %&gt;% addmargins()</code></pre>
+<pre><code>##        truth
+## predict   0   1 Sum
+##     0   347 177 524
+##     1    17  18  35
+##     Sum 364 195 559</code></pre>
+<pre class="r"><code>(347+18)/559 #Accuracy</code></pre>
+<pre><code>## [1] 0.6529517</code></pre>
+<pre class="r"><code>18/195 #Sensitivity</code></pre>
+<pre><code>## [1] 0.09230769</code></pre>
+<pre class="r"><code>347/364 #Specificity</code></pre>
+<pre><code>## [1] 0.9532967</code></pre>
+<pre class="r"><code>18/35 #Precision</code></pre>
+<pre><code>## [1] 0.5142857</code></pre>
+<pre class="r"><code>odds &lt;- function(p)p/(1-p)
+p &lt;- seq(0,1,by=.1)
+cbind(p, odds=odds(p)) %&gt;% round(4)</code></pre>
+<pre><code>##         p   odds
+##  [1,] 0.0 0.0000
+##  [2,] 0.1 0.1111
+##  [3,] 0.2 0.2500
+##  [4,] 0.3 0.4286
+##  [5,] 0.4 0.6667
+##  [6,] 0.5 1.0000
+##  [7,] 0.6 1.5000
+##  [8,] 0.7 2.3333
+##  [9,] 0.8 4.0000
+## [10,] 0.9 9.0000
+## [11,] 1.0    Inf</code></pre>
+<pre class="r"><code>logit &lt;- function(p)log(odds(p))
+cbind(p, odds=odds(p),logit=logit(p)) %&gt;% round(4)</code></pre>
+<pre><code>##         p   odds   logit
+##  [1,] 0.0 0.0000    -Inf
+##  [2,] 0.1 0.1111 -2.1972
+##  [3,] 0.2 0.2500 -1.3863
+##  [4,] 0.3 0.4286 -0.8473
+##  [5,] 0.4 0.6667 -0.4055
+##  [6,] 0.5 1.0000  0.0000
+##  [7,] 0.6 1.5000  0.4055
+##  [8,] 0.7 2.3333  0.8473
+##  [9,] 0.8 4.0000  1.3863
+## [10,] 0.9 9.0000  2.1972
+## [11,] 1.0    Inf     Inf</code></pre>
+<pre class="r"><code>newdat2$logit &lt;- predict(fit2)
+newdat2$Gender &lt;- factor(newdat2$Gender, levels = c(&quot;female&quot;, &quot;male&quot;))
+ggplot(newdat2, aes(logit, fill=Gender)) + 
+  geom_density(alpha=.3) +
+  geom_vline(xintercept=0,lty=2)</code></pre>
+<p><img src="/Project2-OG_files/figure-html/unnamed-chunk-6-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>library(plotROC)
+ROCplot &lt;- ggplot(newdat2) + geom_roc(aes(d= Gender, m= probs), n.cuts = 0)
+ROCplot</code></pre>
+<p><img src="/Project2-OG_files/figure-html/unnamed-chunk-6-2.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>calc_auc(ROCplot)</code></pre>
+<pre><code>##   PANEL group       AUC
+## 1     1    -1 0.6008805</code></pre>
+<pre class="r"><code>class_diag &lt;- function(probs,truth){
+  tab &lt;- table(factor(probs&gt;.5,levels=c(&quot;FALSE&quot;,&quot;TRUE&quot;)),truth)
+  acc=sum(diag(tab))/sum(tab)
+  sens=tab[2,2]/colSums(tab)[2]
+  spec=tab[1,1]/colSums(tab)[1]
+  ppv=tab[2,2]/rowSums(tab)[2]
+  if(is.numeric(truth)==FALSE &amp; is.logical(truth)==FALSE) truth&lt;-as.numeric(truth)-1
+  ord &lt;- order(probs, decreasing=TRUE)
+  probs &lt;- probs[ord]; truth &lt;- truth[ord]
+  TPR=cumsum(truth)/max(1,sum(truth)) 
+  FPR=cumsum(!truth)/max(1,sum(!truth))
+  dup &lt;- c(probs[-1]&gt;=probs[-length(probs)], FALSE)
+  TPR &lt;- c(0,TPR[!dup],1); FPR&lt;-c(0,FPR[!dup],1)
+  n &lt;- length(TPR)
+  auc &lt;- sum( ((TPR[-1]+TPR[-n])/2) * (FPR[-1]-FPR[-n]) )
+  data.frame(acc,sens,spec,ppv,auc)
+}
+
+set.seed(1234)
+k= 10
+newdat3 &lt;- newdat2[sample(nrow(newdat2)),]
+folds &lt;- cut(seq(1:nrow(newdat2)), breaks=k, labels=F)
+diags &lt;- NULL
+for(i in 1:k){
+  train &lt;- newdat3[folds!=i,] 
+  test &lt;- newdat3[folds==i,]
+  truth &lt;- test$y
+  fit3 &lt;- glm(y~Drink + ToSleep, data=train, family=&quot;binomial&quot;)
+  probs &lt;- predict(fit3, newdata = test, type=&quot;response&quot;)
+  diags &lt;- rbind(diags, class_diag(probs, truth))
+}
+summarize_all(diags, mean)</code></pre>
+<pre><code>##         acc       sens      spec       ppv       auc
+## 1 0.6439935 0.08070141 0.9459457 0.5128571 0.5846584</code></pre>
+<p><em>The regression model was performed by predicting my binary variable ‘Gender’, where 1 is a male and 0 is a female, from the explanatory variables ‘Drink’ and ‘ToSleep’. The coefficent test tells me that ‘Drinkpop’ does not differ significantly based on ‘Gender’, however ‘Drinkwater’ and ‘ToSleep’ do. The odds of the student drinking pop was -0.19 times that of them drinking milk, and odds of water was -0.55 times that of milk. The male and female differed by a factor of 0.21 from each other on the time they went to sleep, on average. A confusion matrix was computed in order to give us model predictions against true values for the regression. Accuracy, the proportion of correctly classified cases, was found to be 0.653. Sensitivity, the proportion of observed progressions correctly classified, was found to be 0.092. Specificity, the proportion of censored progressions, was found to be 0.953. Precision, the proportion of those classified as observed progressions who actually are, was found to be 0.514. An ROC curve was plotted to generate AUC which quantifies how well the predictions are overall. Calculating the AUC with the package in R, it was 0.601. This AUC is considered to be poor according to the rule of thumb since it lies between 0.6 ad 0.7. Lastly, the 10-fold cross validation was performed and generated an avergae out-of-sample accuracy of 0.639, sensitivity of 0.068, and precision was given as NA. The other values to mention were specificity which equaled 0.946 and an AUC of 0.593.</em></p>
+<pre class="r"><code>library(glmnet)
+y &lt;- as.matrix(studentdata$Gender)
+x &lt;- model.matrix(Gender~., data= studentdata)[,-1]
+head(x)</code></pre>
+<pre><code>## Student Height Shoes Number Dvds ToSleep WakeUp Haircut
+Job Drinkpop Drinkwater WakeUp_c
+## 1 1 67 10 5 10 -2.5 5.5 60 30.0 0 1 -2.92862254
+## 2 2 64 20 7 5 1.5 8.0 0 20.0 1 0 -0.42862254
+## 3 3 61 12 2 6 -1.5 7.5 48 0.0 0 0 -0.92862254
+## 4 4 61 3 6 40 2.0 8.5 10 0.0 0 1 0.07137746
+## 5 5 70 4 5 6 0.0 9.0 15 17.5 1 0 0.57137746
+## 7 7 61 12 3 53 1.5 7.5 35 20.0 0 1 -0.92862254</code></pre>
+<pre class="r"><code>x &lt;- scale(x)
+
+cv &lt;- cv.glmnet(x, y, family= &quot;binomial&quot;)
+lasso &lt;- glmnet(x, y, family=&quot;binomial&quot;, lambda=cv$lambda.1se)
+coef(lasso)</code></pre>
+<pre><code>## 13 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
+##                       s0
+## (Intercept) -1.328224135
+## Student      .          
+## Height       1.210242617
+## Shoes       -1.466865169
+## Number       .          
+## Dvds         .          
+## ToSleep      0.035392106
+## WakeUp       0.010405400
+## Haircut     -0.646761656
+## Job          .          
+## Drinkpop     .          
+## Drinkwater   .          
+## WakeUp_c     0.001247693</code></pre>
+<pre class="r"><code>set.seed(1234)
+k=10
+newdat4 &lt;- studentdata %&gt;% sample_frac
+folds2 &lt;- ntile(1:nrow(newdat4), n=10)
+diags2 &lt;- NULL
+for(i in 1:k){
+  train2 &lt;- newdat4[folds2!=i,]
+  test2 &lt;- newdat4[folds2==i,]
+  truth2 &lt;- test2$Gender
+  fit4 &lt;- glm(Gender ~ Drink + ToSleep, data=train2, family=&quot;binomial&quot;)
+  probs2 &lt;- predict(fit4, newdata=test2, type=&quot;response&quot;)
+  diags2 &lt;- rbind(diags,class_diag(probs,truth))
+}
+
+diags2 %&gt;% summarize_all(mean)</code></pre>
+<pre><code>##         acc       sens      spec       ppv       auc
+## 1 0.6487603 0.08346593 0.9484674 0.5268398 0.5947719</code></pre>
+<p><em>The lasso regression perfomred predicted the binary variable ‘Gender’ from all other variables in the data set as predictors. The variables that were retained after choosing lambda include ‘Height’, ‘Shoes’, ‘ToSleep’, ‘WakeUp’, ‘Haircut’, ‘Drinkwater’, and of course the mean centered values for ‘WakeUp’ and ‘ToSleep’. These show that they are the most predictive variables in this regression. After computing the 10-fold CV, the out-of-sample accuracy was 0.646. The logistic regression in part 5 had an accuracy of 0.643, which was just a little smaller than it is for the retained variables. Because of this, the retained predictors generated a rather better model (not by much) and can make more accurate predictions.</em></p>
+
+              <hr>
+              <div class="related-posts">
+                <h5>Related Posts</h5>
+                
+              </div>
+            </div>
+          </div>
+          <hr>
+        <div class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+        </div>
+      </div>
+      
+    </div>
+
+    
+    <footer>
+  <div id="footer">
+    <div class="container">
+      <p class="text-muted">&copy; All rights reserved. Powered by <a href="https://gohugo.io/">Hugo</a> and
+      <a href="http://www.github.com/nurlansu/hugo-sustain/">sustain</a> with ♥</p>
+    </div>
+  </div>
+</footer>
+<div class="footer"></div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="/js/docs.min.js"></script>
+<script src="/js/main.js"></script>
+
+<script src="/js/ie10-viewport-bug-workaround.js"></script>
+
+
+    
+  </body>
+</html>

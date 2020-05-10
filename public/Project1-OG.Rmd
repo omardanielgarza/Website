@@ -1,0 +1,152 @@
+---
+title: 'Project 1: Exploratory Data Analysis'
+author: "Omar Garza odg265"
+date: "3/11/2020"
+output:
+  html_document: default
+  word_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = TRUE, fig.align = "center", warning = F, message = F,
+tidy=TRUE, tidy.opts=list(width.cutoff=60), R.options=list(max.print=100))
+```
+
+```{r}
+library(readxl)
+library(knitr)
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(stringr)
+library(fivethirtyeight)
+
+states <- state_info
+scores <- read_excel("Statesinfo.xlsx")
+
+
+#?state_info
+```
+
+*The two datasets I have chosen share a common variable 'state'. One of the datasets came from the fivethirteight package called 'state_info', and the other came from the carData package laebled 'States'. The first dataset gives all 51 US states and includes 4 categorical varibales as follows: the state name (state), state abbreviation (state_abbrev), US census designated division (division), and the US census designated region (region). The second data set gives 6 numerical variables along with the 51 US States as the common categorical variable on the Education and Related Statistics for US States. The numerical variables of this dataset are as follows: population in 1000s (pop), average score of graduating high-school students in the state on the verbal component of the Scholastic Aptitude Test (SATV), average score of graduating high-school students in the state on the math component of the Scholastic Aptitude Test (SATM), percentage of graduating high-school students in the state who took the SAT exam (percent), state spending on public education in $1000s per student (dollars), and average teacher's salary in the state in $1000s.*
+
+*The data sets seemed interesting to me because I can delve into the statistics of how high schoolers perform across different areas of the United States and possible even compare them to the performance of my own SAT scores. The first dataset on the US States was acquired from the US Census Bureau from https://en.wikipedia.org/wiki/List_of_regions_of_the_United_States#Interstate_regions. The second dataset was acquired from United States (1992) Statistical Abstract of the United States Bureau of the Census. I may expect to find relationships between 'SATV' and 'SATM' scores depedning on the 'region' and 'division'. I may also expect to see relationships between the higher scores and higher average teacher salary.*
+```{R}
+states <- states%>%
+  pivot_wider(names_from="region", values_from="division")%>%
+  glimpse()
+
+states <- states%>%
+  pivot_longer(c("South","West","Northeast","Midwest"),names_to = "region", values_to = "division", values_drop_na = T)%>%
+  glimpse()
+
+scores <- scores%>%
+  pivot_wider(names_from = "state", values_from = "pop")
+
+scores <- scores%>%
+  pivot_longer(6:51, names_to = "state",values_to = "pop",values_drop_na = T)%>%
+  glimpse()
+```
+
+*Both of my datasets were already tidy, so I made them untidy with 'pivot_wider' and then reshaped them to tidy using 'pivot_longer'. I was sure to use 'values_drop_na' when retidying each dataset to remove any of the NAs that would return in the dataset.*
+```{R}
+states <- state_info
+scores <- read_excel("Statesinfo.xlsx")
+
+joindata<- left_join(states, scores, by="state")%>%glimpse()
+```
+*I joined the two data sets 'driving' and 'states' using a left_join by the common variable 'state'. This was the only common variable between the two data sets so I performed the left_join as opposed to other joins to retain all of the other variables and keep the states, abbreviation, division, and region on the left side of the table. No cases were dropped since they were joined together by the common variable 'state' which both data sets included the same locations, thus I should not experience any problems moving forward.*
+
+```{r}
+joindata%>%summarize_if(is.numeric, mean, na.rm=T)
+
+joindata%>%summarize_if(is.numeric, sd, na.rm=T)
+
+joindata%>%summarize_if(is.numeric, min, na.rm=T)
+
+joindata%>%summarize_if(is.numeric, max, na.rm=T)
+
+joindata%>%summarize_if(is.numeric, var, na.rm=T)
+
+joindata%>%summarize_all(n_distinct)
+
+joindata%>%select_if(is.numeric)%>%na.omit%>%cor
+
+joindata%>%group_by(region)%>%summarize_if(is.numeric, mean, na.rm=T)
+
+joindata%>%group_by(region)%>%summarize_if(is.numeric, sd, na.rm=T)
+
+joindata%>%filter(region=="Northeast")%>%group_by(division)%>%summarize_if(is.numeric, mean, na.rm= T)
+
+joindata%>%mutate(dollars=ntile(pop,100))%>%arrange(desc(dollars))%>%select(state, dollars)
+```
+*The mean values for all numeric values are: 4876.467 people for 'pop', 448.1569 for 'SATV', 497.3922 for 'SATM', 33.7451% for 'percent', $5.17549 for 'dollars', and $30.94118 for 'pay'.*
+
+*The standard deviations for all numeric values are: 5439.203 people for 'pop', 30.82101 for 'SATV', 34.56882 for 'SATM', 24.07392% for 'percent', $1.376166 for 'dollars', and $5.308151 for 'pay'.*
+
+*The minimum for all numeric values are: 454 people for 'pop', 397 for 'SATV', 437 for 'SATM', 4% for 'percent', $2.993 for 'dollars', and $22 for 'pay'.*
+
+*The maximum for all numeric values are: 29760 people for 'pop', 511 for 'SATV', 577 for 'SATM', 97% for 'percent', $9.159 for 'dollars', and $43 for 'pay'.*
+
+*The variance for all numeric values are: 29584926 people for 'pop', 949.9349 for 'SATV', 1195.003 for 'SATM', 579.5537% for 'percent', $1.893833 for 'dollars', and $28.17647 for 'pay'.*
+
+*The number of distinct values for all numeric values are: 51 for 'pop', 42 for 'SATV', 40 for 'SATM', 37 for 'percent', 51 for 'dollars', and 20 for 'pay'.*
+
+*The correlation matrix for all numeric variables shows the strongest correlation at 0.9620359 for the average score of graduating high school students on the verbal portion of the SAT (SATV) and average score of graduating high school students on the math portion of the SAT (SATM) scores. Out of all four regions in the United States, the Northeast has the highest mean and standard deviation state funding on education 6.953889 for mean and 1.2949359 for the standard deviation. Out of the two divisons within the Northeast, the Mid-Atlantic division had the highest mean on state funding for education in the at 8.064333. California ranks the highest in the 99th percentile for the most funding spent on education, while Wyoming ranks the lowest in the 1st percentile.*
+```{r}
+joindata%>%ggplot(aes(x= SATV, y= SATM, color= region)) +
+  geom_point(size=3) +
+  theme_minimal() +
+  ggtitle("Average SAT Verbal and SAT Math Scores by Region") +
+  xlab("Average Scores on the Verbal SAT") +
+  ylab("Average Scores on the Math SAT")
+```
+
+*The first plot was a scatterplot made to compare the two highest correlating varibales by 'region': 'SATV' and 'SATM'. According to the scatterplot it can be determined that all of the regions show a positive relationship between the two variables, but the Midwest does seem to have a higher overall aerage relationship. One thing I did notice is that the Northeast region does not have too high of a positive relationship, as their scores tended to remain around the same scores.*
+
+```{r}
+joindata%>%ggplot(aes(x= region, fill= division)) +
+  geom_bar(aes(y= dollars), stat = "summary", fun.y= "mean") +
+  ggtitle("State Spending on Public Education per Student by Division") +
+  ylab("Average Cost of Spending ($1000's)") +
+  xlab("Region")
+```
+*The second plot is a stacked bar chart displaying the average cost of state spending per student by thousands (dollars), organized by 'region' and 'division' within each region. It is evident that the Northeast region spends the most money on its students, although the South region is not far behind however the South does consist of three divisions whereas the Northeast is only two. Within the Northeast region, the Mid-Atlantic division takes up the majority of the state spending. Overall, however, it is apparent that the Mid-Atlantic division spends the most money on their students as opposed to any other division in the United States.*
+
+```{r}
+joindata%>%select_if(is.numeric)%>%scale%>%cov%>%round(2)
+
+score_nums <- joindata%>%select_if(is.numeric)%>%scale
+
+score_pca <- princomp(score_nums)
+names(score_pca)
+summary(score_pca, loadings = T)
+
+eig <- score_pca$sdev^2
+varprop=round(eig/sum(eig), 2)
+ggplot() + 
+  geom_bar(aes(y= varprop, x= 1:6), stat = "identity") + 
+  xlab("") + geom_path(aes(y= varprop, x=1:6)) + 
+  geom_text(aes(x=1:6,y=varprop,label=round(varprop,2)),vjust=1,col="white",size= 5) +
+  scale_y_continuous(labels = scales::percent) + 
+  scale_x_continuous(breaks = 1:10)
+
+```
+
+*My data was first prepared by grabbing all of the relevant numerical values and sclaing it. I then used 'princomp()' on this scaled data and chose two components to use after creating the plot to take a look at my eigen values. Then, with these components I was able to find the PC scores of each and visualize them through the loading plot.*
+
+```{r}
+score_pca$loadings[1:6,1:2]%>%
+  as.data.frame%>%
+  rownames_to_column%>%
+  ggplot() + geom_hline(aes(yintercept=0),lty=2) + 
+  geom_vline(aes(xintercept=0),lty=2) +
+  ylab("PC2")+xlab("PC1") + 
+  geom_segment(aes(x=0,y=0,xend=Comp.1,yend=Comp.2),arrow = arrow(), col="red") +
+  geom_label(aes(x=Comp.1*1.1,y=Comp.2*1.1,label=rowname)) +
+  ggtitle("PCA Loadings Plot")
+```
+
+*The loadings plot shows that 'percent' and 'pop' affect PC1 the most while 'SATM' and 'SATV' affect PC2 the most. 'SATV' and 'SATM' also negatively affected PC1 while the other variables like 'pop', 'pay', 'dollars', and 'percent' negatively affected PC1.*
+```{R}

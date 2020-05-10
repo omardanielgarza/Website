@@ -1,0 +1,220 @@
+---
+title: 'Project 2: Modeling, Testing, and Predicting'
+author: "Omar Garza odg265"
+date: "05/01/2020"
+output:
+  html_document:
+    toc: yes
+    toc_float:
+      collapsed: no
+      smooth_scroll: yes
+  pdf_document:
+    toc: yes
+  word_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+hook_output = knit_hooks$get('output')
+knit_hooks$set(output = function(x, options) {
+  # this hook is used only when the linewidth option is not NULL
+  if (!is.null(n <- options$linewidth)) {
+    x = knitr:::split_lines(x)
+    # any lines wider than n should be wrapped
+    if (any(nchar(x) > n)) x = strwrap(x, width = n)
+    x = paste(x, collapse = '\n')
+  }
+  hook_output(x, options)
+})
+
+knitr::opts_chunk$set(echo = TRUE, eval = TRUE,fig.align="center",warning=FALSE,message=FALSE,fig.width=8, fig.height=5, linewidth=60)
+options(tibble.width = 100,width = 100)
+library(tidyverse)
+```
+
+```{r}
+library(LearnBayes)
+head(studentdata)
+#?studentdata
+```
+
+*My dataset is named 'studentdata' and comes from the 'LearnBayes' package built in R. It is the answers to a sheet of questions given to a large number of students in an introductory statistics class. There contains 11 variables with a total of 657 observations. Among the most important variables, in which I focus on in this project, include the following numerical ones: 'Height' in inches, 'Shoes' relating to the number of pairs the student owns, 'ToSleep' in regards to the time the student went to sleep the previous night in hours past midnight (negative values equate to before midnight), and 'WakeUp' in regards to the time the person woke up the next morning. The categorical variables include: 'Drink' which has three levels (milk, pop, and water) relating to the usual drink the student has at suppertime, and 'Gender' which has two levels (male, female) and was used as my binary variable. The others are not worth mentioning as I did not use them anywhere in the project.*
+
+```{r}
+studentdata <- studentdata %>% na.omit()
+man1 <- manova(cbind(Height, Shoes, ToSleep)~Drink, data= studentdata)
+summary(man1)
+
+summary.aov(man1)
+
+pairwise.t.test(studentdata$Shoes, studentdata$Drink, p.adj = "none")
+
+1-(0.95)^7
+0.05/7
+```
+
+*A MANOVA test was performed to test the effect of the categorical variable, 'Drink', with three levels (milk, pop, water) on three numeric variables ('Height', 'Shoes', and 'ToSleep'). I performed a total of 7 tests, and the probability of at least one Type I error was found to be 0.302, then after using the bonferroni correction, the adjusted significance level was 0.007. There was evidence of a significant effect of at least one of the numerical variables due to the p-value being less than 0.05 in the MANOVA. Thus, three univariate ANOVAs were performed to determine which of the numeric variables showed the mean significant difference across the levels of 'Drink' type. The ANOVA tests demonstrated that 'Shoes' had the significant differences on 'Drink'. Finally, a post-hoc t-test was performed conducting three pairwise comparisons to determine which 'Drink' levels differed. The results indicated that there are statistical significant differences between milk and water (p= 0.0034) and also between pop and water (p= 0.0244), but not between milk and pop (p= 0.3562). Some assumptions may have been met, but other were not. For instance random sampling was not met in this situation because I had to omit any NAs in the dataset before running any tests. On the other hand, assumptions like no extreme outliers, and normal distribution did seem to have been met in this situation. While I recognize there are many other assumptions, these are only a few to mention that can relate best to my model.*
+
+```{r}
+rand_dist <- vector()
+for(i in 1:5000){
+  new <- data.frame(ToSleep= sample(studentdata$ToSleep), Gender= studentdata$Gender)
+  rand_dist[i] <- mean(new[new$Gender=="male",]$ToSleep)- mean(new[new$Gender=="female",]$ToSleep)
+}
+
+studentdata %>% group_by(Gender) %>%
+  summarize(means=mean(ToSleep)) %>% 
+  summarize(`mean_diff:`=diff(means))
+
+{hist(rand_dist, main = "", ylab = ""); abline(v= 0.4046703	, col= "red")}
+
+mean(rand_dist > 0.4046703 | rand_dist < -0.4046703	)
+```
+
+*Null Hypothesis: Mean time, in hours, the students went to sleep past midnight (ToSleep) is the same between males and females (Gender). Alternative Hypothesis: Mean time, in hours, the students went to sleep past midnight (ToSleep) is different between males and females (Gender). I performed a randomization tests using the original permutation, and then a for loop. After obtaining the extreme mean difference of the orginal data as 0.405, I computed a two-tailed p-value to determine if we can reject the null hypothesis. Given that the p-value=6e-04, it is obvious that this is smaller than the alpha 0.05. Thus, we are able to reject the null hypothesis and accept the alternative meaning that the time males went to sleep before midnight the previous night was different than the time females went to sleep, on average. A histogram was compited to show the distribution and included the test statistic in red.*
+    
+```{r}
+library(lmtest)
+studentdata$WakeUp_c <- studentdata$WakeUp - mean(studentdata$WakeUp)
+fit <- lm(ToSleep ~ Drink*WakeUp_c, data = studentdata)
+summary(fit)
+
+newdat <- studentdata
+newdat$Drink <- rep("milk", length(newdat$Drink))
+newdat$Drink <- rep("pop", length(newdat$Drink))
+newdat$Drink <- rep("water", length(newdat$Drink))
+newdat$pred1 <- predict(fit, newdat)
+newdat$pred2 <- predict(fit, newdat)
+newdat$pred3 <- predict(fit, newdat)
+studentdata$WakeUp_c <- studentdata$WakeUp_c
+
+
+qplot(x= WakeUp_c, y= ToSleep, color= Drink, data = studentdata) + stat_smooth(method = "lm", se= FALSE, fullrange = TRUE)
+
+resids <- fit$residuals; fitvals <- fit$fitted.values
+ggplot() + geom_point(aes(fitvals, resids)) + geom_hline(yintercept = 0, col= "red")
+bptest(fit)
+
+ggplot()+geom_histogram(aes(resids),bins=20)
+ggplot()+geom_qq(aes(sample=resids))+geom_qq_line(aes(sample=resids), color='red')
+
+library(sandwich)
+
+summary(fit)$coef[,1:2]
+coeftest(fit, vcov=vcovHC(fit))[,1:2]
+
+(sum((studentdata$ToSleep- mean(studentdata$ToSleep))^2)- sum(fit$residuals^2))/ sum((studentdata$ToSleep-mean(studentdata$ToSleep))^2)
+```
+
+*The linear regression moodel predicted 'ToSleep' from the interaction of 'Drink' and 'WakeUp_c', as it's mean was centered. The full model with the interaction is ToSleep= 1.02+0.06(Drinkpop)-0.04(Drinkwater)+0.44(WakeUp_c)-0.05(Drinkpop:WakeUp_c)-0.04(Drinkwater:WakeUp_c. Controlling for 'WakeUp_c', when 'Drinkpop' is 1 and the others 0, then 'ToSleep' increases by a factor of 0.062. Similarly, when controlling for 'WakeUp_c', and 'Drinkwater' is 1, while others are 0, then 'ToSleep' decreases by a factor of 0.036. For every 1-unit increase in 'WakeUp_c', 'ToSleep' increases by a factor of 0.444. As far as the interactions, when 'Drinkpop' is 1 and the rest 0, the resulting equation is: ToSleep=1.08+0.39(WakeUp_c). When 'Drinkwater' is 1 and the others 0, the resulting equation is: ToSleep=0.987+0.41(WakeUp_c). Assumptions were checked graphically, which linearlity and homoskeedasticity looked OK, as well as normality. I still computed regression results with robust standard errors, and indeed since there was no significant change from the uncorrected SEs to the corrected robust SEs, then it proved homoskedasticity to be met. The proportion of the variation in the response variable 'ToSleep' is 0.185 and can be explained by the overall model provided above.*
+
+```{r}
+samp_distn <- replicate(5000, {
+  boot_dat <- sample_frac(studentdata, replace = T)
+  fit1 <- lm(ToSleep ~ Drink*WakeUp_c, data = boot_dat)
+  coef(fit1)
+})
+
+samp_distn %>% t %>% as.data.frame %>% summarize_all(sd)
+```
+
+*The same regression model from before, with the interaction, was used to compute the bootstrapped standard errors. When comparing them to the original and robust standard errors, these values were still not very from off from the other two outputs. More precisely, the bootstrapped SEs seemed to closer to the values of the corrected SEs rather than the uncorrected SEs, but it still decreased more. Given this information, the p-value would also decrease with these SEs. Either way, however, it will still not be significant just as before so we would still fail to reject the null hypothesis.*
+ 
+```{r}
+newdat2 <- studentdata %>% mutate(y=ifelse(Gender=="male",1,0))
+
+fit2 <- glm(y ~ Drink + ToSleep, data = newdat2, family = "binomial")
+coeftest(fit2)
+exp(coef(fit2))
+
+probs <- predict(fit2, type = "response")
+table(predict= as.numeric(probs>0.5), truth= newdat2$y) %>% addmargins()
+
+(347+18)/559 #Accuracy
+18/195 #Sensitivity
+347/364 #Specificity
+18/35 #Precision
+
+odds <- function(p)p/(1-p)
+p <- seq(0,1,by=.1)
+cbind(p, odds=odds(p)) %>% round(4)
+logit <- function(p)log(odds(p))
+cbind(p, odds=odds(p),logit=logit(p)) %>% round(4)
+
+newdat2$logit <- predict(fit2)
+newdat2$Gender <- factor(newdat2$Gender, levels = c("female", "male"))
+ggplot(newdat2, aes(logit, fill=Gender)) + 
+  geom_density(alpha=.3) +
+  geom_vline(xintercept=0,lty=2)
+
+library(plotROC)
+ROCplot <- ggplot(newdat2) + geom_roc(aes(d= Gender, m= probs), n.cuts = 0)
+ROCplot
+calc_auc(ROCplot)
+
+class_diag <- function(probs,truth){
+  tab <- table(factor(probs>.5,levels=c("FALSE","TRUE")),truth)
+  acc=sum(diag(tab))/sum(tab)
+  sens=tab[2,2]/colSums(tab)[2]
+  spec=tab[1,1]/colSums(tab)[1]
+  ppv=tab[2,2]/rowSums(tab)[2]
+  if(is.numeric(truth)==FALSE & is.logical(truth)==FALSE) truth<-as.numeric(truth)-1
+  ord <- order(probs, decreasing=TRUE)
+  probs <- probs[ord]; truth <- truth[ord]
+  TPR=cumsum(truth)/max(1,sum(truth)) 
+  FPR=cumsum(!truth)/max(1,sum(!truth))
+  dup <- c(probs[-1]>=probs[-length(probs)], FALSE)
+  TPR <- c(0,TPR[!dup],1); FPR<-c(0,FPR[!dup],1)
+  n <- length(TPR)
+  auc <- sum( ((TPR[-1]+TPR[-n])/2) * (FPR[-1]-FPR[-n]) )
+  data.frame(acc,sens,spec,ppv,auc)
+}
+
+set.seed(1234)
+k= 10
+newdat3 <- newdat2[sample(nrow(newdat2)),]
+folds <- cut(seq(1:nrow(newdat2)), breaks=k, labels=F)
+diags <- NULL
+for(i in 1:k){
+  train <- newdat3[folds!=i,] 
+  test <- newdat3[folds==i,]
+  truth <- test$y
+  fit3 <- glm(y~Drink + ToSleep, data=train, family="binomial")
+  probs <- predict(fit3, newdata = test, type="response")
+  diags <- rbind(diags, class_diag(probs, truth))
+}
+summarize_all(diags, mean)
+```
+
+*The regression model was performed by predicting my binary variable 'Gender', where 1 is a male and 0 is a female, from the explanatory variables 'Drink' and 'ToSleep'. The coefficent test tells me that 'Drinkpop' does not differ significantly based on 'Gender', however 'Drinkwater' and 'ToSleep' do. The odds of the student drinking pop was -0.19 times that of them drinking milk, and odds of water was -0.55 times that of milk. The male and female differed by a factor of 0.21 from each other on the time they went to sleep, on average. A confusion matrix was computed in order to give us model predictions against true values for the regression. Accuracy, the proportion of correctly classified cases, was found to be 0.653. Sensitivity, the proportion of observed progressions correctly classified, was found to be 0.092. Specificity, the proportion of censored progressions, was found to be 0.953. Precision, the proportion of those classified as observed progressions who actually are, was found to be 0.514. An ROC curve was plotted to generate AUC which quantifies how well the predictions are overall. Calculating the AUC with the package in R, it was 0.601. This AUC is considered to be poor according to the rule of thumb since it lies between 0.6 ad 0.7. Lastly, the 10-fold cross validation was performed and generated an avergae out-of-sample accuracy of 0.639, sensitivity of 0.068, and precision was given as NA. The other values to mention were specificity which equaled 0.946 and an AUC of 0.593.*
+
+```{r}
+library(glmnet)
+y <- as.matrix(studentdata$Gender)
+x <- model.matrix(Gender~., data= studentdata)[,-1]
+head(x)
+x <- scale(x)
+
+cv <- cv.glmnet(x, y, family= "binomial")
+lasso <- glmnet(x, y, family="binomial", lambda=cv$lambda.1se)
+coef(lasso)
+
+set.seed(1234)
+k=10
+newdat4 <- studentdata %>% sample_frac
+folds2 <- ntile(1:nrow(newdat4), n=10)
+diags2 <- NULL
+for(i in 1:k){
+  train2 <- newdat4[folds2!=i,]
+  test2 <- newdat4[folds2==i,]
+  truth2 <- test2$Gender
+  fit4 <- glm(Gender ~ Drink + ToSleep, data=train2, family="binomial")
+  probs2 <- predict(fit4, newdata=test2, type="response")
+  diags2 <- rbind(diags,class_diag(probs,truth))
+}
+
+diags2 %>% summarize_all(mean)
+```
+
+*The lasso regression perfomred predicted the binary variable 'Gender' from all other variables in the data set as predictors. The variables that were retained after choosing lambda include 'Height', 'Shoes', 'ToSleep', 'WakeUp', 'Haircut', 'Drinkwater', and of course the mean centered values for 'WakeUp' and 'ToSleep'. These show that they are the most predictive variables in this regression. After computing the 10-fold CV, the out-of-sample accuracy was 0.646. The logistic regression in part 5 had an accuracy of 0.643, which was just a little smaller than it is for the retained variables. Because of this, the retained predictors generated a rather better model (not by much) and can make more accurate predictions.*

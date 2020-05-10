@@ -1,0 +1,227 @@
+---
+title: 'Project 1: Exploratory Data Analysis'
+author: "Omar Garza odg265"
+date: "3/11/2020"
+output:
+  html_document: default
+  word_document: default
+  pdf_document: default
+---
+
+
+
+<pre class="r"><code>library(readxl)
+library(knitr)
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(stringr)
+library(fivethirtyeight)
+
+states &lt;- state_info
+scores &lt;- read_excel(&quot;Statesinfo.xlsx&quot;)
+
+
+# ?state_info</code></pre>
+<p><em>The two datasets I have chosen share a common variable ‘state’. One of the datasets came from the fivethirteight package called ‘state_info’, and the other came from the carData package laebled ‘States’. The first dataset gives all 51 US states and includes 4 categorical varibales as follows: the state name (state), state abbreviation (state_abbrev), US census designated division (division), and the US census designated region (region). The second data set gives 6 numerical variables along with the 51 US States as the common categorical variable on the Education and Related Statistics for US States. The numerical variables of this dataset are as follows: population in 1000s (pop), average score of graduating high-school students in the state on the verbal component of the Scholastic Aptitude Test (SATV), average score of graduating high-school students in the state on the math component of the Scholastic Aptitude Test (SATM), percentage of graduating high-school students in the state who took the SAT exam (percent), state spending on public education in $1000s per student (dollars), and average teacher’s salary in the state in $1000s.</em></p>
+<p><em>The data sets seemed interesting to me because I can delve into the statistics of how high schoolers perform across different areas of the United States and possible even compare them to the performance of my own SAT scores. The first dataset on the US States was acquired from the US Census Bureau from <a href="https://en.wikipedia.org/wiki/List_of_regions_of_the_United_States#Interstate_regions" class="uri">https://en.wikipedia.org/wiki/List_of_regions_of_the_United_States#Interstate_regions</a>. The second dataset was acquired from United States (1992) Statistical Abstract of the United States Bureau of the Census. I may expect to find relationships between ‘SATV’ and ‘SATM’ scores depedning on the ‘region’ and ‘division’. I may also expect to see relationships between the higher scores and higher average teacher salary.</em></p>
+<pre class="r"><code>states &lt;- states %&gt;% pivot_wider(names_from = &quot;region&quot;, values_from = &quot;division&quot;) %&gt;% 
+    glimpse()</code></pre>
+<pre><code>## Rows: 51
+## Columns: 6
+## $ state        &lt;chr&gt; &quot;Alabama&quot;, &quot;Alaska&quot;, &quot;Arizona&quot;, &quot;Arkansas&quot;, &quot;California&quot;…
+## $ state_abbrev &lt;chr&gt; &quot;AL&quot;, &quot;AK&quot;, &quot;AZ&quot;, &quot;AR&quot;, &quot;CA&quot;, &quot;CO&quot;, &quot;CT&quot;, &quot;DE&quot;, &quot;FL&quot;, &quot;G…
+## $ South        &lt;chr&gt; &quot;East South Central&quot;, NA, NA, &quot;West South Central&quot;, NA, …
+## $ West         &lt;chr&gt; NA, &quot;Pacific&quot;, &quot;Mountain&quot;, NA, &quot;Pacific&quot;, &quot;Mountain&quot;, NA…
+## $ Northeast    &lt;chr&gt; NA, NA, NA, NA, NA, NA, &quot;New England&quot;, NA, NA, NA, NA, N…
+## $ Midwest      &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, &quot;East No…</code></pre>
+<pre class="r"><code>states &lt;- states %&gt;% pivot_longer(c(&quot;South&quot;, &quot;West&quot;, &quot;Northeast&quot;, 
+    &quot;Midwest&quot;), names_to = &quot;region&quot;, values_to = &quot;division&quot;, 
+    values_drop_na = T) %&gt;% glimpse()</code></pre>
+<pre><code>## Rows: 51
+## Columns: 4
+## $ state        &lt;chr&gt; &quot;Alabama&quot;, &quot;Alaska&quot;, &quot;Arizona&quot;, &quot;Arkansas&quot;, &quot;California&quot;…
+## $ state_abbrev &lt;chr&gt; &quot;AL&quot;, &quot;AK&quot;, &quot;AZ&quot;, &quot;AR&quot;, &quot;CA&quot;, &quot;CO&quot;, &quot;CT&quot;, &quot;DE&quot;, &quot;FL&quot;, &quot;G…
+## $ region       &lt;chr&gt; &quot;South&quot;, &quot;West&quot;, &quot;West&quot;, &quot;South&quot;, &quot;West&quot;, &quot;West&quot;, &quot;North…
+## $ division     &lt;chr&gt; &quot;East South Central&quot;, &quot;Pacific&quot;, &quot;Mountain&quot;, &quot;West South…</code></pre>
+<pre class="r"><code>scores &lt;- scores %&gt;% pivot_wider(names_from = &quot;state&quot;, values_from = &quot;pop&quot;)
+
+scores &lt;- scores %&gt;% pivot_longer(6:51, names_to = &quot;state&quot;, values_to = &quot;pop&quot;, 
+    values_drop_na = T) %&gt;% glimpse()</code></pre>
+<pre><code>## Rows: 46
+## Columns: 12
+## $ SATV                   &lt;dbl&gt; 470, 438, 445, 470, 419, 456, 430, 433, 418, 4…
+## $ SATM                   &lt;dbl&gt; 514, 476, 497, 511, 484, 513, 471, 470, 466, 4…
+## $ percent                &lt;dbl&gt; 8, 42, 25, 6, 45, 28, 74, 58, 44, 57, 52, 17, …
+## $ dollars                &lt;dbl&gt; 3.648, 7.887, 4.231, 3.334, 4.826, 4.809, 7.91…
+## $ pay                    &lt;dbl&gt; 27, 43, 30, 23, 39, 31, 43, 35, 30, 29, 32, 25…
+## $ Washington             &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `West Virginia`        &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ Wisconsin              &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ Wyoming                &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ `District of Columbia` &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ state                  &lt;chr&gt; &quot;Alabama&quot;, &quot;Alaska&quot;, &quot;Arizona&quot;, &quot;Arkansas&quot;, &quot;C…
+## $ pop                    &lt;dbl&gt; 4041, 550, 3665, 2351, 29760, 3294, 3287, 666,…</code></pre>
+<p><em>Both of my datasets were already tidy, so I made them untidy with ‘pivot_wider’ and then reshaped them to tidy using ‘pivot_longer’. I was sure to use ‘values_drop_na’ when retidying each dataset to remove any of the NAs that would return in the dataset.</em></p>
+<pre class="r"><code>states &lt;- state_info
+scores &lt;- read_excel(&quot;Statesinfo.xlsx&quot;)
+
+joindata &lt;- left_join(states, scores, by = &quot;state&quot;) %&gt;% glimpse()</code></pre>
+<pre><code>## Rows: 51
+## Columns: 10
+## $ state        &lt;chr&gt; &quot;Alabama&quot;, &quot;Alaska&quot;, &quot;Arizona&quot;, &quot;Arkansas&quot;, &quot;California&quot;…
+## $ state_abbrev &lt;chr&gt; &quot;AL&quot;, &quot;AK&quot;, &quot;AZ&quot;, &quot;AR&quot;, &quot;CA&quot;, &quot;CO&quot;, &quot;CT&quot;, &quot;DE&quot;, &quot;FL&quot;, &quot;G…
+## $ division     &lt;chr&gt; &quot;East South Central&quot;, &quot;Pacific&quot;, &quot;Mountain&quot;, &quot;West South…
+## $ region       &lt;chr&gt; &quot;South&quot;, &quot;West&quot;, &quot;West&quot;, &quot;South&quot;, &quot;West&quot;, &quot;West&quot;, &quot;North…
+## $ pop          &lt;dbl&gt; 4041, 550, 3665, 2351, 29760, 3294, 3287, 666, 12938, 64…
+## $ SATV         &lt;dbl&gt; 470, 438, 445, 470, 419, 456, 430, 433, 418, 401, 404, 4…
+## $ SATM         &lt;dbl&gt; 514, 476, 497, 511, 484, 513, 471, 470, 466, 443, 481, 5…
+## $ percent      &lt;dbl&gt; 8, 42, 25, 6, 45, 28, 74, 58, 44, 57, 52, 17, 16, 54, 5,…
+## $ dollars      &lt;dbl&gt; 3.648, 7.887, 4.231, 3.334, 4.826, 4.809, 7.914, 6.016, …
+## $ pay          &lt;dbl&gt; 27, 43, 30, 23, 39, 31, 43, 35, 30, 29, 32, 25, 34, 32, …</code></pre>
+<p><em>I joined the two data sets ‘driving’ and ‘states’ using a left_join by the common variable ‘state’. This was the only common variable between the two data sets so I performed the left_join as opposed to other joins to retain all of the other variables and keep the states, abbreviation, division, and region on the left side of the table. No cases were dropped since they were joined together by the common variable ‘state’ which both data sets included the same locations, thus I should not experience any problems moving forward.</em></p>
+<pre class="r"><code>joindata %&gt;% summarize_if(is.numeric, mean, na.rm = T)</code></pre>
+<pre><code>## # A tibble: 1 x 6
+##     pop  SATV  SATM percent dollars   pay
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;
+## 1 4877.  448.  497.    33.7    5.18  30.9</code></pre>
+<pre class="r"><code>joindata %&gt;% summarize_if(is.numeric, sd, na.rm = T)</code></pre>
+<pre><code>## # A tibble: 1 x 6
+##     pop  SATV  SATM percent dollars   pay
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;
+## 1 5439.  30.8  34.6    24.1    1.38  5.31</code></pre>
+<pre class="r"><code>joindata %&gt;% summarize_if(is.numeric, min, na.rm = T)</code></pre>
+<pre><code>## # A tibble: 1 x 6
+##     pop  SATV  SATM percent dollars   pay
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;
+## 1   454   397   437       4    2.99    22</code></pre>
+<pre class="r"><code>joindata %&gt;% summarize_if(is.numeric, max, na.rm = T)</code></pre>
+<pre><code>## # A tibble: 1 x 6
+##     pop  SATV  SATM percent dollars   pay
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;
+## 1 29760   511   577      74    9.16    43</code></pre>
+<pre class="r"><code>joindata %&gt;% summarize_if(is.numeric, var, na.rm = T)</code></pre>
+<pre><code>## # A tibble: 1 x 6
+##         pop  SATV  SATM percent dollars   pay
+##       &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;
+## 1 29584926.  950. 1195.    580.    1.89  28.2</code></pre>
+<pre class="r"><code>joindata %&gt;% summarize_all(n_distinct)</code></pre>
+<pre><code>## # A tibble: 1 x 10
+##   state state_abbrev division region   pop  SATV  SATM percent dollars   pay
+##   &lt;int&gt;        &lt;int&gt;    &lt;int&gt;  &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;   &lt;int&gt;   &lt;int&gt; &lt;int&gt;
+## 1    51           51        9      4    51    42    40      37      51    20</code></pre>
+<pre class="r"><code>joindata %&gt;% select_if(is.numeric) %&gt;% na.omit %&gt;% cor</code></pre>
+<pre><code>##                pop       SATV       SATM    percent    dollars        pay
+## pop      1.0000000 -0.3381028 -0.2300418  0.2100687  0.1436745  0.3677244
+## SATV    -0.3381028  1.0000000  0.9620359 -0.8627954 -0.5268313 -0.5559238
+## SATM    -0.2300418  0.9620359  1.0000000 -0.8581495 -0.4844477 -0.4853306
+## percent  0.2100687 -0.8627954 -0.8581495  1.0000000  0.7111474  0.6630098
+## dollars  0.1436745 -0.5268313 -0.4844477  0.7111474  1.0000000  0.8476737
+## pay      0.3677244 -0.5559238 -0.4853306  0.6630098  0.8476737  1.0000000</code></pre>
+<pre class="r"><code>joindata %&gt;% group_by(region) %&gt;% summarize_if(is.numeric, mean, 
+    na.rm = T)</code></pre>
+<pre><code>## # A tibble: 4 x 7
+##   region      pop  SATV  SATM percent dollars   pay
+##   &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;
+## 1 Midwest   4972.  475.  533.    14.8    4.86  29.8
+## 2 Northeast 5645.  425   470.    66.7    6.95  35.8
+## 3 South     5026.  441   484.    33.4    4.73  29.1
+## 4 West      4060.  449.  501.    28.9    4.83  31</code></pre>
+<pre class="r"><code>joindata %&gt;% group_by(region) %&gt;% summarize_if(is.numeric, sd, 
+    na.rm = T)</code></pre>
+<pre><code>## # A tibble: 4 x 7
+##   region      pop  SATV  SATM percent dollars   pay
+##   &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;
+## 1 Midwest   3757. 28.9  31.8    13.3    0.693  4.71
+## 2 Northeast 6008.  8.73  7.65    4.92   1.29   5.04
+## 3 South     4208. 31.9  33.1    24.4    1.24   4.59
+## 4 West      7839. 24.1  20.6    15.7    1.17   5.34</code></pre>
+<pre class="r"><code>joindata %&gt;% filter(region == &quot;Northeast&quot;) %&gt;% group_by(division) %&gt;% 
+    summarize_if(is.numeric, mean, na.rm = T)</code></pre>
+<pre><code>## # A tibble: 2 x 7
+##   division       pop  SATV  SATM percent dollars   pay
+##   &lt;chr&gt;        &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;
+## 1 Mid-Atlantic 12534  417.  469.    67.7    8.06  38.7
+## 2 New England   2201  429.  470     66.2    6.40  34.3</code></pre>
+<pre class="r"><code>joindata %&gt;% mutate(dollars = ntile(pop, 100)) %&gt;% arrange(desc(dollars)) %&gt;% 
+    select(state, dollars)</code></pre>
+<pre><code>## # A tibble: 51 x 2
+##    state          dollars
+##    &lt;chr&gt;            &lt;int&gt;
+##  1 California          99
+##  2 New York            97
+##  3 Texas               95
+##  4 Florida             93
+##  5 Pennsylvania        91
+##  6 Illinois            89
+##  7 Ohio                87
+##  8 Michigan            85
+##  9 New Jersey          83
+## 10 North Carolina      81
+## # … with 41 more rows</code></pre>
+<p><em>The mean values for all numeric values are: 4876.467 people for ‘pop’, 448.1569 for ‘SATV’, 497.3922 for ‘SATM’, 33.7451% for ‘percent’, $5.17549 for ‘dollars’, and $30.94118 for ‘pay’.</em></p>
+<p><em>The standard deviations for all numeric values are: 5439.203 people for ‘pop’, 30.82101 for ‘SATV’, 34.56882 for ‘SATM’, 24.07392% for ‘percent’, $1.376166 for ‘dollars’, and $5.308151 for ‘pay’.</em></p>
+<p><em>The minimum for all numeric values are: 454 people for ‘pop’, 397 for ‘SATV’, 437 for ‘SATM’, 4% for ‘percent’, $2.993 for ‘dollars’, and $22 for ‘pay’.</em></p>
+<p><em>The maximum for all numeric values are: 29760 people for ‘pop’, 511 for ‘SATV’, 577 for ‘SATM’, 97% for ‘percent’, $9.159 for ‘dollars’, and $43 for ‘pay’.</em></p>
+<p><em>The variance for all numeric values are: 29584926 people for ‘pop’, 949.9349 for ‘SATV’, 1195.003 for ‘SATM’, 579.5537% for ‘percent’, $1.893833 for ‘dollars’, and $28.17647 for ‘pay’.</em></p>
+<p><em>The number of distinct values for all numeric values are: 51 for ‘pop’, 42 for ‘SATV’, 40 for ‘SATM’, 37 for ‘percent’, 51 for ‘dollars’, and 20 for ‘pay’.</em></p>
+<p><em>The correlation matrix for all numeric variables shows the strongest correlation at 0.9620359 for the average score of graduating high school students on the verbal portion of the SAT (SATV) and average score of graduating high school students on the math portion of the SAT (SATM) scores. Out of all four regions in the United States, the Northeast has the highest mean and standard deviation state funding on education 6.953889 for mean and 1.2949359 for the standard deviation. Out of the two divisons within the Northeast, the Mid-Atlantic division had the highest mean on state funding for education in the at 8.064333. California ranks the highest in the 99th percentile for the most funding spent on education, while Wyoming ranks the lowest in the 1st percentile.</em></p>
+<pre class="r"><code>joindata %&gt;% ggplot(aes(x = SATV, y = SATM, color = region)) + 
+    geom_point(size = 3) + theme_minimal() + ggtitle(&quot;Average SAT Verbal and SAT Math Scores by Region&quot;) + 
+    xlab(&quot;Average Scores on the Verbal SAT&quot;) + ylab(&quot;Average Scores on the Math SAT&quot;)</code></pre>
+<p><img src="/Project1-OG_files/figure-html/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><em>The first plot was a scatterplot made to compare the two highest correlating varibales by ‘region’: ‘SATV’ and ‘SATM’. According to the scatterplot it can be determined that all of the regions show a positive relationship between the two variables, but the Midwest does seem to have a higher overall aerage relationship. One thing I did notice is that the Northeast region does not have too high of a positive relationship, as their scores tended to remain around the same scores.</em></p>
+<pre class="r"><code>joindata %&gt;% ggplot(aes(x = region, fill = division)) + geom_bar(aes(y = dollars), 
+    stat = &quot;summary&quot;, fun.y = &quot;mean&quot;) + ggtitle(&quot;State Spending on Public Education per Student by Division&quot;) + 
+    ylab(&quot;Average Cost of Spending ($1000&#39;s)&quot;) + xlab(&quot;Region&quot;)</code></pre>
+<p><img src="/Project1-OG_files/figure-html/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" />
+<em>The second plot is a stacked bar chart displaying the average cost of state spending per student by thousands (dollars), organized by ‘region’ and ‘division’ within each region. It is evident that the Northeast region spends the most money on its students, although the South region is not far behind however the South does consist of three divisions whereas the Northeast is only two. Within the Northeast region, the Mid-Atlantic division takes up the majority of the state spending. Overall, however, it is apparent that the Mid-Atlantic division spends the most money on their students as opposed to any other division in the United States.</em></p>
+<pre class="r"><code>joindata %&gt;% select_if(is.numeric) %&gt;% scale %&gt;% cov %&gt;% round(2)</code></pre>
+<pre><code>##           pop  SATV  SATM percent dollars   pay
+## pop      1.00 -0.34 -0.23    0.21    0.14  0.37
+## SATV    -0.34  1.00  0.96   -0.86   -0.53 -0.56
+## SATM    -0.23  0.96  1.00   -0.86   -0.48 -0.49
+## percent  0.21 -0.86 -0.86    1.00    0.71  0.66
+## dollars  0.14 -0.53 -0.48    0.71    1.00  0.85
+## pay      0.37 -0.56 -0.49    0.66    0.85  1.00</code></pre>
+<pre class="r"><code>score_nums &lt;- joindata %&gt;% select_if(is.numeric) %&gt;% scale
+
+score_pca &lt;- princomp(score_nums)
+names(score_pca)</code></pre>
+<pre><code>## [1] &quot;sdev&quot;     &quot;loadings&quot; &quot;center&quot;   &quot;scale&quot;    &quot;n.obs&quot;    &quot;scores&quot;   &quot;call&quot;</code></pre>
+<pre class="r"><code>summary(score_pca, loadings = T)</code></pre>
+<pre><code>## Importance of components:
+##                           Comp.1    Comp.2    Comp.3     Comp.4     Comp.5
+## Standard deviation     1.9579110 0.9581940 0.9346614 0.36589523 0.30702052
+## Proportion of Variance 0.6516807 0.1560831 0.1485106 0.02275948 0.01602447
+## Cumulative Proportion  0.6516807 0.8077637 0.9562743 0.97903382 0.99505829
+##                             Comp.6
+## Standard deviation     0.170495919
+## Proportion of Variance 0.004941706
+## Cumulative Proportion  1.000000000
+## 
+## Loadings:
+##         Comp.1 Comp.2 Comp.3 Comp.4 Comp.5 Comp.6
+## pop      0.194  0.909  0.282  0.218              
+## SATV    -0.460  0.118 -0.381  0.225 -0.260  0.715
+## SATM    -0.443  0.243 -0.416  0.205 -0.223 -0.693
+## percent  0.473 -0.208         0.534 -0.666       
+## dollars  0.402        -0.594  0.406  0.566       
+## pay      0.411  0.236 -0.496 -0.641 -0.342</code></pre>
+<pre class="r"><code>eig &lt;- score_pca$sdev^2
+varprop = round(eig/sum(eig), 2)
+ggplot() + geom_bar(aes(y = varprop, x = 1:6), stat = &quot;identity&quot;) + 
+    xlab(&quot;&quot;) + geom_path(aes(y = varprop, x = 1:6)) + geom_text(aes(x = 1:6, 
+    y = varprop, label = round(varprop, 2)), vjust = 1, col = &quot;white&quot;, 
+    size = 5) + scale_y_continuous(labels = scales::percent) + 
+    scale_x_continuous(breaks = 1:10)</code></pre>
+<p><img src="/Project1-OG_files/figure-html/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><em>My data was first prepared by grabbing all of the relevant numerical values and sclaing it. I then used ‘princomp()’ on this scaled data and chose two components to use after creating the plot to take a look at my eigen values. Then, with these components I was able to find the PC scores of each and visualize them through the loading plot.</em></p>
+<pre class="r"><code>score_pca$loadings[1:6, 1:2] %&gt;% as.data.frame %&gt;% rownames_to_column %&gt;% 
+    ggplot() + geom_hline(aes(yintercept = 0), lty = 2) + geom_vline(aes(xintercept = 0), 
+    lty = 2) + ylab(&quot;PC2&quot;) + xlab(&quot;PC1&quot;) + geom_segment(aes(x = 0, 
+    y = 0, xend = Comp.1, yend = Comp.2), arrow = arrow(), col = &quot;red&quot;) + 
+    geom_label(aes(x = Comp.1 * 1.1, y = Comp.2 * 1.1, label = rowname)) + 
+    ggtitle(&quot;PCA Loadings Plot&quot;)</code></pre>
+<p><img src="/Project1-OG_files/figure-html/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><em>The loadings plot shows that ‘percent’ and ‘pop’ affect PC1 the most while ‘SATM’ and ‘SATV’ affect PC2 the most. ‘SATV’ and ‘SATM’ also negatively affected PC1 while the other variables like ‘pop’, ‘pay’, ‘dollars’, and ‘percent’ negatively affected PC1.</em></p>

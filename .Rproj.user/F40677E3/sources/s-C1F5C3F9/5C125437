@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1589046452540.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "5C125437",
+    "lastKnownWriteTime" : 1589077134,
+    "last_content_update" : 1589077134571,
+    "path" : "~/Desktop/Website- Omar/content/Project1-OG.Rmd",
+    "project_path" : "content/Project1-OG.Rmd",
+    "properties" : {
+        "cursorPosition" : "18,14",
+        "scrollLine" : "0"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 6,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}
