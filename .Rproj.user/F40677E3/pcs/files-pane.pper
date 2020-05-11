@@ -1,8 +1,8 @@
 {
-    "path" : "~/Desktop/Website- Omar",
+    "path" : "~/Desktop/Website",
     "sortOrder" : [
         {
-            "ascending" : false,
+            "ascending" : true,
             "columnIndex" : 2
         }
     ]
