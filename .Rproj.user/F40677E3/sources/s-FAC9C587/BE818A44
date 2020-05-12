@@ -5,15 +5,15 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "434591742",
+    "hash" : "0",
     "id" : "BE818A44",
     "lastKnownWriteTime" : 1589241940,
-    "last_content_update" : 1589241940015,
+    "last_content_update" : 1589313186597,
     "path" : "~/Desktop/Website/content/blog/2020-05-11-r-and-python-can-communicate.Rmd",
     "project_path" : "content/blog/2020-05-11-r-and-python-can-communicate.Rmd",
     "properties" : {
         "cursorPosition" : "41,42",
-        "scrollLine" : "23"
+        "scrollLine" : "0"
     },
     "read_only" : false,
     "read_only_alternatives" : [
