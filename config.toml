@@ -24,8 +24,9 @@ theme = "hugo-sustain"
   Email         = "omargarza@utexas.edu"
   Twitter       = "_omargarza_"
   LinkedIn      = "omar-garza-70389514a"
-  Instagram     = "_omargarza_"
   Facebook      = "omar.garza22"
+  Instagram     = "_omargarza_"
+
 
 ## Main Menu
 [[menu.main]]
