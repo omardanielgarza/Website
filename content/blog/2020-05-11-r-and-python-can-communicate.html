@@ -1,0 +1,37 @@
+---
+title: R and Python Can Communicate
+author: Omar Garza
+date: '2020-05-11'
+slug: r-and-python-can-communicate
+categories: []
+tags: []
+description: ''
+---
+
+
+
+<p>Imagine you are sitting at your desk working through R studio and your mind begins wandering away. You start to think about what life would be like out of school, and begin to fantasize over your hopes and dreams. The nerd in me, however, begins to think about how R and Python can communicate with each other and how I could make that work.</p>
+<p>Well, I am in luck because if you go online and listen to your professor who knows a lot (at least mine does), you’ll come to realize that this isn’t a very difficult task. To start, the ‘reticulate’ package must be installed in R, and that is what gets the two languages to understand eachother. It’s kind of like google translate…well not really, but you’ll get the point in a bit.</p>
+<p>So after loading in the package, I think about what to say as a test run. Rather than keep it boring and lame, I try to crack a joke. Again, I am inserting this into an R chunk so nothing too crazy is happening yet, give me a break.</p>
+<pre class="r"><code>library(reticulate)
+joke &lt;- &quot;My wife told me to stop acting like a flamingo.&quot;</code></pre>
+<p>Wait for it…</p>
+<pre class="python"><code>punchline= &quot;I had to put my foot down.&quot;
+print(r.joke,punchline)</code></pre>
+<pre><code>## My wife told me to stop acting like a flamingo. I had to put my foot down.</code></pre>
+<p>And the audience goes…</p>
+<iframe src="https://giphy.com/embed/O5NyCibf93upy" width="200" height="400" frameBorder="0" class="giphy-embed" allowFullScreen>
+</iframe>
+<p>
+<a href="https://giphy.com/gifs/new-O5NyCibf93upy">via GIPHY</a>
+</p>
+<p>And then you realize another way that can execute this same joke is to use Python-defined functions in R code chunks.</p>
+<pre class="r"><code>cat(c(joke,py$punchline))</code></pre>
+<pre><code>## My wife told me to stop acting like a flamingo. I had to put my foot down.</code></pre>
+<p>And this time the audience goes…</p>
+<iframe src="https://giphy.com/embed/26FPzgftlRfgwkEw0" width="200" height="400" frameBorder="0" class="giphy-embed" allowFullScreen>
+</iframe>
+<p>
+<a href="https://giphy.com/gifs/justin-crying-im-out-michael-jordon-26FPzgftlRfgwkEw0">via GIPHY</a>
+</p>
+<p>And that, my friends, is how R and Python can communicate between languages.</p>

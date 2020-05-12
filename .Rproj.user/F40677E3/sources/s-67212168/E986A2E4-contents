@@ -7,3 +7,5 @@ blogdown::serve_site()
 install.packages("tidyverse", repo = 'https://mac.R-project.org')
 update.packages("tidyverse")
 getwd()
+
+install.packages("reticulate")
