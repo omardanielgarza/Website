@@ -5,14 +5,14 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "0",
+    "hash" : "481556245",
     "id" : "DE786721",
-    "lastKnownWriteTime" : 1589079336,
-    "last_content_update" : 1589079336070,
+    "lastKnownWriteTime" : 1589336964,
+    "last_content_update" : 1589336964305,
     "path" : "~/Desktop/Website/content/Project2-OG.Rmd",
     "project_path" : "content/Project2-OG.Rmd",
     "properties" : {
-        "cursorPosition" : "189,1517",
+        "cursorPosition" : "3,17",
         "scrollLine" : "0"
     },
     "read_only" : false,

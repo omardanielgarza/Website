@@ -61,7 +61,7 @@
         </div>
         <div class="blog-title">
           <h4>
-          January 1, 0001
+          May 1, 2020
             &nbsp;&nbsp;
             
           </h4>
@@ -143,7 +143,7 @@ studentdata %&gt;% group_by(Gender) %&gt;%
 <pre class="r"><code>{hist(rand_dist, main = &quot;&quot;, ylab = &quot;&quot;); abline(v= 0.4046703 , col= &quot;red&quot;)}</code></pre>
 <p><img src="/Project2-OG_files/figure-html/unnamed-chunk-3-1.png" width="768" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>mean(rand_dist &gt; 0.4046703 | rand_dist &lt; -0.4046703 )</code></pre>
-<pre><code>## [1] 8e-04</code></pre>
+<pre><code>## [1] 0.0014</code></pre>
 <p><em>Null Hypothesis: Mean time, in hours, the students went to sleep past midnight (ToSleep) is the same between males and females (Gender). Alternative Hypothesis: Mean time, in hours, the students went to sleep past midnight (ToSleep) is different between males and females (Gender). I performed a randomization tests using the original permutation, and then a for loop. After obtaining the extreme mean difference of the orginal data as 0.405, I computed a two-tailed p-value to determine if we can reject the null hypothesis. Given that the p-value=6e-04, it is obvious that this is smaller than the alpha 0.05. Thus, we are able to reject the null hypothesis and accept the alternative meaning that the time males went to sleep before midnight the previous night was different than the time females went to sleep, on average. A histogram was compited to show the distribution and included the test statistic in red.</em></p>
 <pre class="r"><code>library(lmtest)
 studentdata$WakeUp_c &lt;- studentdata$WakeUp - mean(studentdata$WakeUp)
@@ -228,8 +228,8 @@ summary(fit)$coef[,1:2]</code></pre>
 samp_distn %&gt;% t %&gt;% as.data.frame %&gt;% summarize_all(sd)</code></pre>
 <pre><code>## (Intercept) Drinkpop Drinkwater WakeUp_c
 Drinkpop:WakeUp_c Drinkwater:WakeUp_c
-## 1 0.137795 0.1703982 0.1538948 0.08461191 0.1158087
-0.09787689</code></pre>
+## 1 0.1410743 0.173857 0.1562348 0.08688015 0.11449
+0.09918989</code></pre>
 <p><em>The same regression model from before, with the interaction, was used to compute the bootstrapped standard errors. When comparing them to the original and robust standard errors, these values were still not very from off from the other two outputs. More precisely, the bootstrapped SEs seemed to closer to the values of the corrected SEs rather than the uncorrected SEs, but it still decreased more. Given this information, the p-value would also decrease with these SEs. Either way, however, it will still not be significant just as before so we would still fail to reject the null hypothesis.</em></p>
 <pre class="r"><code>newdat2 &lt;- studentdata %&gt;% mutate(y=ifelse(Gender==&quot;male&quot;,1,0))
 

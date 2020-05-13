@@ -1,7 +1,7 @@
 ---
 title: 'Project 1: Exploratory Data Analysis'
 author: "Omar Garza odg265"
-date: "3/11/2020"
+date: "2020-03-11"
 output:
   html_document: default
   word_document: default

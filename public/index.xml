@@ -6,7 +6,7 @@
     <description>Recent content on Portfolio</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-US</language>
-    <lastBuildDate>Sun, 02 Oct 2016 22:55:05 -0400</lastBuildDate>
+    <lastBuildDate>Fri, 01 May 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
@@ -31,6 +31,24 @@ Well, I am in luck because if you go online and listen to your professor who kno
     </item>
     
     <item>
+      <title>Project 2: Modeling, Testing, and Predicting</title>
+      <link>/project2-og/</link>
+      <pubDate>Fri, 01 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/project2-og/</guid>
+      <description>library(LearnBayes) head(studentdata) ## Student Height Gender Shoes Number Dvds ToSleep WakeUp Haircut Job Drink ## 1 1 67 female 10 5 10 -2.5 5.5 60 30.0 water ## 2 2 64 female 20 7 5 1.5 8.0 0 20.0 pop ## 3 3 61 female 12 2 6 -1.5 7.5 48 0.0 milk ## 4 4 61 female 3 6 40 2.0 8.5 10 0.0 water ## 5 5 70 male 4 5 6 0.</description>
+    </item>
+    
+    <item>
+      <title>Project 1: Exploratory Data Analysis</title>
+      <link>/project1-og/</link>
+      <pubDate>Wed, 11 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/project1-og/</guid>
+      <description>library(readxl) library(knitr) library(dplyr) library(tidyverse) library(ggplot2) library(stringr) library(fivethirtyeight) states &amp;lt;- state_info scores &amp;lt;- read_excel(&amp;quot;Statesinfo.xlsx&amp;quot;) # ?state_info The two datasets I have chosen share a common variable ‘state’. One of the datasets came from the fivethirteight package called ‘state_info’, and the other came from the carData package laebled ‘States’. The first dataset gives all 51 US states and includes 4 categorical varibales as follows: the state name (state), state abbreviation (state_abbrev), US census designated division (division), and the US census designated region (region).</description>
+    </item>
+    
+    <item>
       <title>Projects</title>
       <link>/projects/</link>
       <pubDate>Sun, 02 Oct 2016 22:55:05 -0400</pubDate>
@@ -40,24 +58,6 @@ Well, I am in luck because if you go online and listen to your professor who kno
   Exploratory Data Analysis with Tidyverse Tools
   Modeling, Testing, and Classification
   </description>
-    </item>
-    
-    <item>
-      <title>Project 1: Exploratory Data Analysis</title>
-      <link>/project1-og/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/project1-og/</guid>
-      <description>library(readxl) library(knitr) library(dplyr) library(tidyverse) library(ggplot2) library(stringr) library(fivethirtyeight) states &amp;lt;- state_info scores &amp;lt;- read_excel(&amp;quot;Statesinfo.xlsx&amp;quot;) # ?state_info The two datasets I have chosen share a common variable ‘state’. One of the datasets came from the fivethirteight package called ‘state_info’, and the other came from the carData package laebled ‘States’. The first dataset gives all 51 US states and includes 4 categorical varibales as follows: the state name (state), state abbreviation (state_abbrev), US census designated division (division), and the US census designated region (region).</description>
-    </item>
-    
-    <item>
-      <title>Project 2: Modeling, Testing, and Predicting</title>
-      <link>/project2-og/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/project2-og/</guid>
-      <description>library(LearnBayes) head(studentdata) ## Student Height Gender Shoes Number Dvds ToSleep WakeUp Haircut Job Drink ## 1 1 67 female 10 5 10 -2.5 5.5 60 30.0 water ## 2 2 64 female 20 7 5 1.5 8.0 0 20.0 pop ## 3 3 61 female 12 2 6 -1.5 7.5 48 0.0 milk ## 4 4 61 female 3 6 40 2.0 8.5 10 0.0 water ## 5 5 70 male 4 5 6 0.</description>
     </item>
     
   </channel>
