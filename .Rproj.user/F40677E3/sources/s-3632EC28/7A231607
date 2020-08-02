@@ -2,18 +2,18 @@
     "collab_server" : "",
     "contents" : "",
     "created" : 1596397517301.000,
-    "dirty" : true,
+    "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
     "hash" : "0",
     "id" : "7A231607",
-    "lastKnownWriteTime" : 1596397517,
-    "last_content_update" : 1596399862248,
+    "lastKnownWriteTime" : 1596400188,
+    "last_content_update" : 1596400188830,
     "path" : "~/Desktop/Website/content/blog/2020-08-02-the-summer-of-covid-19.Rmd",
     "project_path" : "content/blog/2020-08-02-the-summer-of-covid-19.Rmd",
     "properties" : {
-        "cursorPosition" : "15,465",
-        "scrollLine" : "12"
+        "cursorPosition" : "13,433",
+        "scrollLine" : "0"
     },
     "read_only" : false,
     "read_only_alternatives" : [
