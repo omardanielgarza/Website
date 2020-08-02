@@ -1,16 +1,16 @@
 {
     "collab_server" : "",
     "contents" : "",
-    "created" : 1589078478430.000,
+    "created" : 1589046527580.000,
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "4024167739",
-    "id" : "CE1333C7",
-    "lastKnownWriteTime" : 1589336041,
-    "last_content_update" : 1589336041578,
-    "path" : "~/Desktop/Website/content/projects.md",
-    "project_path" : "content/projects.md",
+    "hash" : "0",
+    "id" : "DE786721",
+    "lastKnownWriteTime" : 1589336964,
+    "last_content_update" : 1589336964305,
+    "path" : "~/Desktop/Website/content/Project2-OG.Rmd",
+    "project_path" : "content/Project2-OG.Rmd",
     "properties" : {
         "cursorPosition" : "3,18",
         "scrollLine" : "0"
@@ -18,8 +18,8 @@
     "read_only" : false,
     "read_only_alternatives" : [
     ],
-    "relative_order" : 9,
+    "relative_order" : 7,
     "source_on_save" : false,
     "source_window" : "",
-    "type" : "markdown"
+    "type" : "r_markdown"
 }
