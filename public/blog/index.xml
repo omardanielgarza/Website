@@ -6,10 +6,19 @@
     <description>Recent content in Blogs on Portfolio</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-US</language>
-    <lastBuildDate>Mon, 11 May 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 02 Aug 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/blog/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>The Summer of COVID-19</title>
+      <link>/blog/the-summer-of-covid-19/</link>
+      <pubDate>Sun, 02 Aug 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/the-summer-of-covid-19/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Meet My Dog Zeke!</title>
